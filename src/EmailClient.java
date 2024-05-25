@@ -1,195 +1,212 @@
-import java.util.ArrayList;
-import java.util.Comparator;
+
+    import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-class EmailClient {
-    private String username;
-    private String password;
-    private boolean loggedIn = false;
-    public List<Email> inbox = new ArrayList<>();
-    protected List<Email> sent = new ArrayList<>();
-    public List<Contact> contacts = new ArrayList<>();
+    public class EmailClient {
+        private static EmailClient instance;
+        private String currentUser;
+        public List<Email> inbox;
+        public List<Email> sent;
+        private List<Contact> contacts;
 
-
-    public void login(String username, String password) {
-        this.username = username;
-        this.password = password;
-        loggedIn = true;
-        System.out.println("Logged in as " + username);
-    }
-
-    public void logout() {
-        loggedIn = false;
-        username = null;
-        password = null;
-        System.out.println("Logged out.");
-    }
-
-    public void viewInbox() {
-        System.out.println("Inbox:");
-        for (int i = 0; i < inbox.size(); i++) {
-            System.out.println((i + 1) + ". " + inbox.get(i).subject);
+        private EmailClient() {
+            inbox = new ArrayList<>();
+            sent = new ArrayList<>();
+            contacts = new ArrayList<>();
         }
-    }
 
-    public void viewSent() {
-        System.out.println("Sent:");
-        for (int i = 0; i < sent.size(); i++) {
-            System.out.println((i + 1) + ". " + sent.get(i).subject);
+        public static EmailClient getInstance() {
+            if (instance == null) {
+                instance = new EmailClient();
+            }
+            return instance;
         }
-    }
 
-    public void composeEmail(String recipient, String subject, String body, String priority, String date) {
-        Email email = new Email(username, recipient, subject, body, priority, date);
-        email.setSent(true);
-        sent.add(email);
-        System.out.println("Email sent to " + recipient);
-    }
-
-    public void readEmail(List<Email> emails, int index) {
-        if (index >= 0 && index < emails.size()) {
-            System.out.println(emails.get(index));
-        } else {
-            System.out.println("Invalid email index.");
+        public void login(String username, String password) {
+            // Implement login logic
+            currentUser = username;
+            System.out.println("Logged in as " + username);
         }
-    }
 
-    public void replyToEmail(int index, String body) {
-        if (index >= 0 && index < inbox.size()) {
-            Email original = inbox.get(index);
-            Email reply = new Email(username, original.sender, "Re: " + original.subject, body, "Normal", "Today");
-            reply.setSent(true);
-            sent.add(reply);
-            System.out.println("Replied to " + original.sender);
-        } else {
-            System.out.println("Invalid email index.");
+        public void logout() {
+            // Implement logout logic
+            System.out.println("Logged out");
+            currentUser = null;
         }
-    }
 
-    public void deleteEmail(int index) {
-        if (index >= 0 && index < inbox.size()) {
-            inbox.remove(index);
-            System.out.println("Email deleted.");
-        } else {
-            System.out.println("Invalid email index.");
-        }
-    }
-
-    public void searchEmails(String keyword) {
-        System.out.println("Search results:");
-        for (int i = 0; i < inbox.size(); i++) {
-            Email email = inbox.get(i);
-            if (email.subject.contains(keyword) || email.getBody().contains(keyword)) {
-                System.out.println((i + 1) + ". " + email.subject);
+        public void viewInbox() {
+            // Implement view inbox logic
+            System.out.println("Inbox:");
+            for (Email email : inbox) {
+                System.out.println(email);
             }
         }
-    }
 
-    public void receiveEmail(Email email) {
-        inbox.add(email);
-    }
-
-    public void archiveEmail(int index) {
-        if (index >= 0 && index < inbox.size()) {
-            Email email = inbox.get(index);
-            email.setArchived(true);
-            System.out.println("Email archived.");
-        } else {
-            System.out.println("Invalid email index.");
-        }
-    }
-    public void sortEmails(boolean ascending) {
-        if (ascending) {
-            inbox.sort(Comparator.comparing(Email::getDate));
-        } else {
-            inbox.sort(Comparator.comparing(Email::getDate).reversed());
-        }
-        System.out.println("Emails sorted.");
-    }
-
-    public List<Email> getEmails(boolean fromInbox) {
-        return fromInbox ? new ArrayList<>(inbox) : new ArrayList<>(sent);
-    }
-
-    public void addContact(Contact contact) {
-        contacts.add(contact);
-        System.out.println("Contact added: " + contact.getName());
-    }
-
-    public void updateContact(String name, String email, String phoneNumber) {
-        for (Contact c : contacts) {
-            if (c.getName().equals(name)) {
-                c.setEmail(email);
-                c.setPhoneNumber(phoneNumber);
-                System.out.println("Contact updated: " + c.getName());
-                return;
+        public void viewSent() {
+            // Implement view sent emails logic
+            System.out.println("Sent Emails:");
+            for (Email email : sent) {
+                System.out.println(email);
             }
         }
-        System.out.println("Contact not found.");
-    }
 
-    public void removeContact(String name) {
-        for (Contact c : contacts) {
-            if (c.getName().equals(name)) {
-                contacts.remove(c);
-                System.out.println("Contact removed: " + name);
-                return;
+        public void composeEmail(String recipient, String subject, String body, String priority, String date) {
+            // Implement compose email logic
+            Email email = new Email(currentUser, recipient, subject, body, priority, date);
+            sent.add(email);
+            System.out.println("Email sent to " + recipient);
+        }
+
+        public void readEmail(List<Email> emails, int index) {
+            // Implement read email logic
+            if (index >= 0 && index < emails.size()) {
+                Email email = emails.get(index);
+                System.out.println(email);
+            } else {
+                System.out.println("Invalid email index.");
             }
         }
-        System.out.println("Contact not found.");
-    }
 
-    public void blockContact(String name) {
-        for (Contact c : contacts) {
-            if (c.getName().equals(name)) {
-                c.setState("blocked");
-                System.out.println("Contact blocked: " + name);
-                return;
+        public void replyToEmail(int index, String body) {
+            // Implement reply to email logic
+            if (index >= 0 && index < inbox.size()) {
+                Email originalEmail = inbox.get(index);
+                Email reply = new Email(currentUser, originalEmail.getSender(), "Re: " + originalEmail.getSubject(), body, "Normal", "Today");
+                sent.add(reply);
+                System.out.println("Reply sent to " + originalEmail.getSender());
+            } else {
+                System.out.println("Invalid email index.");
             }
         }
-        System.out.println("Contact not found.");
-    }
 
-    public void unblockContact(String name) {
-        for (Contact c : contacts) {
-            if (c.getName().equals(name)) {
-                c.setState("active");
-                System.out.println("Contact unblocked: " + name);
-                return;
+        public void deleteEmail(int index) {
+            // Implement delete email logic
+            if (index >= 0 && index < inbox.size()) {
+                inbox.remove(index);
+                System.out.println("Email deleted.");
+            } else {
+                System.out.println("Invalid email index.");
             }
         }
-        System.out.println("Contact not found.");
-    }
 
-    public void changeContactState(String name, String state) {
-        for (Contact c : contacts) {
-            if (c.getName().equals(name)) {
-                c.setState(state);
-                System.out.println("Contact state changed: " + name);
-                return;
+        public void searchEmails(String keyword) {
+            // Implement search emails logic
+            System.out.println("Search results:");
+            for (Email email : inbox) {
+                if (email.getSubject().contains(keyword) || email.getBody().contains(keyword)) {
+                    System.out.println(email);
+                }
             }
         }
-        System.out.println("Contact not found.");
-    }
 
-    public Contact viewContact(String name) {
-        for (Contact c : contacts) {
-            if (c.getName().equals(name)) {
-                System.out.println("Contact details:");
-                System.out.println(c);
-                return c;
+        public void archiveEmail(int index) {
+            // Implement archive email logic
+            if (index >= 0 && index < inbox.size()) {
+                Email email = inbox.remove(index);
+                System.out.println("Email archived: " + email);
+            } else {
+                System.out.println("Invalid email index.");
             }
         }
-        System.out.println("Contact not found.");
-        return null;
-    }
 
-    public List<Contact> searchContacts(String query) {
-        return contacts.stream()
-                .filter(contact -> contact.getName().contains(query) || contact.getEmail().contains(query))
-                .collect(Collectors.toList());
+        public void receiveEmail(Email email) {
+            // Implement receive email logic
+            inbox.add(email);
+        }
+
+        public void sortEmails(boolean ascending) {
+            // Implement sort emails logic
+            inbox.sort((e1, e2) -> ascending ? e1.getDate().compareTo(e2.getDate()) : e2.getDate().compareTo(e1.getDate()));
+            System.out.println("Emails sorted.");
+        }
+
+        public List<Email> getEmails(boolean fromInbox) {
+            // Implement get emails logic
+            return fromInbox ? inbox : sent;
+        }
+
+        public void addContact(Contact contact) {
+            // Implement add contact logic
+            contacts.add(contact);
+            System.out.println("Contact added: " + contact.getName());
+        }
+
+        public void updateContact(String name, String email, String phoneNumber) {
+            // Implement update contact logic
+            for (Contact contact : contacts) {
+                if (contact.getName().equals(name)) {
+                    contact.setEmail(email);
+                    contact.setPhoneNumber(phoneNumber);
+                    System.out.println("Contact updated: " + name);
+                    return;
+                }
+            }
+            System.out.println("Contact not found: " + name);
+        }
+
+        public void removeContact(String name) {
+            // Implement remove contact logic
+            contacts.removeIf(contact -> contact.getName().equals(name));
+            System.out.println("Contact removed: " + name);
+        }
+
+        public void blockContact(String name) {
+            // Implement block contact logic
+            for (Contact contact : contacts) {
+                if (contact.getName().equals(name)) {
+                    contact.setState("blocked");
+                    System.out.println("Contact blocked: " + name);
+                    return;
+                }
+            }
+            System.out.println("Contact not found: " + name);
+        }
+
+        public void unblockContact(String name) {
+            // Implement unblock contact logic
+            for (Contact contact : contacts) {
+                if (contact.getName().equals(name)) {
+                    contact.setState("active");
+                    System.out.println("Contact unblocked: " + name);
+                    return;
+                }
+            }
+            System.out.println("Contact not found: " + name);
+        }
+
+        public void changeContactState(String name, String state) {
+            // Implement change contact state logic
+            for (Contact contact : contacts) {
+                if (contact.getName().equals(name)) {
+                    contact.setState(state);
+                    System.out.println("Contact state changed: " + name + " to " + state);
+                    return;
+                }
+            }
+            System.out.println("Contact not found: " + name);
+        }
+
+        public void viewContact(String name) {
+            // Implement view contact logic
+            for (Contact contact : contacts) {
+                if (contact.getName().equals(name)) {
+                    System.out.println(contact);
+                    return;
+                }
+            }
+            System.out.println("Contact not found: " + name);
+        }
+
+        public List<Contact> searchContacts(String query) {
+            // Implement search contacts logic
+            List<Contact> result = new ArrayList<>();
+            for (Contact contact : contacts) {
+                if (contact.getName().contains(query) || contact.getEmail().contains(query) || contact.getPhoneNumber().contains(query)) {
+                    result.add(contact);
+                }
+            }
+            return result;
+        }
     }
-}
 
 

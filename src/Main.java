@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        EmailClient emailClient = new EmailClient();
+        EmailClient emailClient = EmailClient.getInstance();
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
@@ -12,81 +12,86 @@ public class Main {
             int option = scanner.nextInt();
             scanner.nextLine();  // Consume newline
 
-            switch (option) {
-                case 1:
-                    loginUser(scanner, emailClient);
-                    break;
-                case 2:
-                    emailClient.logout();
-                    break;
-                case 3:
-                    emailClient.viewInbox();
-                    break;
-                case 4:
-                    emailClient.viewSent();
-                    break;
-                case 5:
-                    composeEmail(scanner, emailClient);
-                    break;
-                case 6:
-                    readEmail(scanner, emailClient, true);
-                    break;
-                case 7:
-                    readEmail(scanner, emailClient, false);
-                    break;
-                case 8:
-                    replyToEmail(scanner, emailClient);
-                    break;
-                case 9:
-                    deleteEmail(scanner, emailClient);
-                    break;
-                case 10:
-                    searchEmails(scanner, emailClient);
-                    break;
-                case 11:
-                    archiveEmail(scanner, emailClient);
-                    break;
-                case 12:
-                    receiveTestEmail(emailClient);
-                    break;
-                case 13:
-                    sortEmails(scanner, emailClient);
-                    break;
-                case 14:
-                    getEmails(scanner, emailClient);
-                    break;
-                case 15:
-                    addContact(scanner, emailClient);
-                    break;
-                case 16:
-                    updateContact(scanner, emailClient);
-                    break;
-                case 17:
-                    removeContact(scanner, emailClient);
-                    break;
-                case 18:
-                    blockContact(scanner, emailClient);
-                    break;
-                case 19:
-                    unblockContact(scanner, emailClient);
-                    break;
-                case 20:
-                    changeContactState(scanner, emailClient);
-                    break;
-                case 21:
-                    viewContact(scanner, emailClient);
-                    break;
-                case 22:
-                    searchContacts(scanner, emailClient);
-                    break;
-                case 23:
-                    System.out.println("Exiting...");
-                    scanner.close();
-                    System.exit(0);
-                    break;
-                default:
-                    System.out.println("Invalid option.");
-                    break;
+            try {
+                switch (option) {
+                    case 1:
+                        loginUser(scanner, emailClient);
+                        break;
+                    case 2:
+                        emailClient.logout();
+                        break;
+                    case 3:
+                        emailClient.viewInbox();
+                        break;
+                    case 4:
+                        emailClient.viewSent();
+                        break;
+                    case 5:
+                        composeEmail(scanner, emailClient);
+                        break;
+                    case 6:
+                        readEmail(scanner, emailClient, true);
+                        break;
+                    case 7:
+                        readEmail(scanner, emailClient, false);
+                        break;
+                    case 8:
+                        replyToEmail(scanner, emailClient);
+                        break;
+                    case 9:
+                        deleteEmail(scanner, emailClient);
+                        break;
+                    case 10:
+                        searchEmails(scanner, emailClient);
+                        break;
+                    case 11:
+                        archiveEmail(scanner, emailClient);
+                        break;
+                    case 12:
+                        receiveTestEmail(emailClient);
+                        break;
+                    case 13:
+                        sortEmails(scanner, emailClient);
+                        break;
+                    case 14:
+                        getEmails(scanner, emailClient);
+                        break;
+                    case 15:
+                        addContact(scanner, emailClient);
+                        break;
+                    case 16:
+                        updateContact(scanner, emailClient);
+                        break;
+                    case 17:
+                        removeContact(scanner, emailClient);
+                        break;
+                    case 18:
+                        blockContact(scanner, emailClient);
+                        break;
+                    case 19:
+                        unblockContact(scanner, emailClient);
+                        break;
+                    case 20:
+                        changeContactState(scanner, emailClient);
+                        break;
+                    case 21:
+                        viewContact(scanner, emailClient);
+                        break;
+                    case 22:
+                        searchContacts(scanner, emailClient);
+                        break;
+                    case 23:
+                        System.out.println("Exiting...");
+                        scanner.close();
+                        System.exit(0);
+                        break;
+                    default:
+                        System.out.println("Invalid option.");
+                        break;
+                }
+            } catch (Exception e) {
+                System.out.println("An error occurred: " + e.getMessage());
+                scanner.nextLine();  // Consume the invalid input
             }
         }
     }
@@ -174,111 +179,76 @@ public class Main {
         int index = -1;
         while (index < 0 || index >= size) {
             System.out.print("Enter email index (1 to " + size + "): ");
-            index = scanner.nextInt() - 1;
-            scanner.nextLine();  // Consume newline
-            if (index < 0 || index >= size) {
-                System.out.println("Invalid index. Try again.");
+            if (scanner.hasNextInt()) {
+                index = scanner.nextInt() - 1;
+                scanner.nextLine();  // Consume newline
+                if (index < 0 || index >= size) {
+                    System.out.println("Invalid index. Try again.");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a number.");
+                scanner.nextLine();  // Consume invalid input
             }
         }
         return index;
     }
 
-    //
     private static void sortEmails(Scanner scanner, EmailClient emailClient) {
-        try {
-            System.out.print("Sort emails ascending (true/false): ");
-            boolean ascending = scanner.nextBoolean();
-            emailClient.sortEmails(ascending);
-        } catch (Exception e) {
-            System.out.println("An error occurred: " + e.getMessage());
-        }
+        System.out.print("Sort emails ascending (true/false): ");
+        boolean ascending = scanner.nextBoolean();
+        scanner.nextLine();  // Consume newline
+        emailClient.sortEmails(ascending);
     }
 
     private static void getEmails(Scanner scanner, EmailClient emailClient) {
-        try {
-            System.out.print("Get emails from inbox (true/false): ");
-            boolean fromInbox = scanner.nextBoolean();
-            emailClient.getEmails(fromInbox).forEach(System.out::println);
-        } catch (Exception e) {
-            System.out.println("An error occurred: " + e.getMessage());
-        }
+        System.out.print("Get emails from inbox (true/false): ");
+        boolean fromInbox = scanner.nextBoolean();
+        scanner.nextLine();  // Consume newline
+        emailClient.getEmails(fromInbox).forEach(System.out::println);
     }
 
     private static void addContact(Scanner scanner, EmailClient emailClient) {
-        try {
-            String name = getInput(scanner, "Enter contact name: ");
-            String email = getInput(scanner, "Enter contact email: ");
-            String phoneNumber = getInput(scanner, "Enter contact phone number: ");
-            emailClient.addContact(new Contact(name, email, phoneNumber, "active"));
-        } catch (Exception e) {
-            System.out.println("An error occurred: " + e.getMessage());
-        }
+        String name = getInput(scanner, "Enter contact name: ");
+        String email = getInput(scanner, "Enter contact email: ");
+        String phoneNumber = getInput(scanner, "Enter contact phone number: ");
+        emailClient.addContact(new Contact(name, email, phoneNumber, "active"));
     }
 
     private static void updateContact(Scanner scanner, EmailClient emailClient) {
-        try {
-            String name = getInput(scanner, "Enter contact name to update: ");
-            String email = getInput(scanner, "Enter new email: ");
-            String phoneNumber = getInput(scanner, "Enter new phone number: ");
-            emailClient.updateContact(name, email, phoneNumber);
-        } catch (Exception e) {
-            System.out.println("An error occurred: " + e.getMessage());
-        }
+        String name = getInput(scanner, "Enter contact name to update: ");
+        String email = getInput(scanner, "Enter new email: ");
+        String phoneNumber = getInput(scanner, "Enter new phone number: ");
+        emailClient.updateContact(name, email, phoneNumber);
     }
 
     private static void removeContact(Scanner scanner, EmailClient emailClient) {
-        try {
-            String name = getInput(scanner, "Enter contact name to remove: ");
-            emailClient.removeContact(name);
-        } catch (Exception e) {
-            System.out.println("An error occurred: " + e.getMessage());
-        }
+        String name = getInput(scanner, "Enter contact name to remove: ");
+        emailClient.removeContact(name);
     }
 
     private static void blockContact(Scanner scanner, EmailClient emailClient) {
-        try {
-            String name = getInput(scanner, "Enter contact name to block: ");
-            emailClient.blockContact(name);
-        } catch (Exception e) {
-            System.out.println("An error occurred: " + e.getMessage());
-        }
+        String name = getInput(scanner, "Enter contact name to block: ");
+        emailClient.blockContact(name);
     }
 
     private static void unblockContact(Scanner scanner, EmailClient emailClient) {
-        try {
-            String name = getInput(scanner, "Enter contact name to unblock: ");
-            emailClient.unblockContact(name);
-        } catch (Exception e) {
-            System.out.println("An error occurred: " + e.getMessage());
-        }
+        String name = getInput(scanner, "Enter contact name to unblock: ");
+        emailClient.unblockContact(name);
     }
 
     private static void changeContactState(Scanner scanner, EmailClient emailClient) {
-        try {
-            String name = getInput(scanner, "Enter contact name to change state: ");
-            String state = getInput(scanner, "Enter new state (active/blocked): ");
-            emailClient.changeContactState(name, state);
-        } catch (Exception e) {
-            System.out.println("An error occurred: " + e.getMessage());
-        }
+        String name = getInput(scanner, "Enter contact name to change state: ");
+        String state = getInput(scanner, "Enter new state (active/blocked): ");
+        emailClient.changeContactState(name, state);
     }
 
     private static void viewContact(Scanner scanner, EmailClient emailClient) {
-        try {
-            String name = getInput(scanner, "Enter contact name to view: ");
-            emailClient.viewContact(name);
-        } catch (Exception e) {
-            System.out.println("An error occurred: " + e.getMessage());
-        }
+        String name = getInput(scanner, "Enter contact name to view: ");
+        emailClient.viewContact(name);
     }
 
     private static void searchContacts(Scanner scanner, EmailClient emailClient) {
-        try {
-            String query = getInput(scanner, "Enter search query: ");
-            emailClient.searchContacts(query).forEach(System.out::println);
-        } catch (Exception e) {
-            System.out.println("An error occurred: " + e.getMessage());
-        }
+        String query = getInput(scanner, "Enter search query: ");
+        emailClient.searchContacts(query).forEach(System.out::println);
     }
-
 }

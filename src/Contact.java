@@ -2,16 +2,47 @@ class Contact {
     private String name;
     private String email;
     private String phoneNumber;
-    private String state; // active, inactive, blocked
+    private ContactState state; // Using state pattern
 
     public Contact(String name, String email, String phoneNumber, String state) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
+        setState(state);
+    }
+
+    // State management
+    public void setState(ContactState state) {
         this.state = state;
     }
 
-    // Getters and Setters
+    public void setState(String state) {
+        switch (state.toLowerCase()) {
+            case "active":
+                this.state = new ActiveState();
+                break;
+            case "blocked":
+                this.state = new BlockedState();
+                break;
+            default:
+                this.state = new InactiveState();
+                break;
+        }
+    }
+
+    public void block() {
+        state.block(this);
+    }
+
+    public void unblock() {
+        state.unblock(this);
+    }
+
+    public void activate() {
+        state.activate(this);
+    }
+
+    // Getters and setters
     public String getName() {
         return name;
     }
@@ -36,21 +67,13 @@ class Contact {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
     @Override
     public String toString() {
         return "Contact{" +
                 "name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
-                ", state='" + state + '\'' +
+                ", state='" + state.getClass().getSimpleName() + '\'' +
                 '}';
     }
 }

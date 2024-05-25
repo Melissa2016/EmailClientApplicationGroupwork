@@ -1,4 +1,4 @@
-class Email {
+public class Email {
     public String sender;
     public String subject;
     private String recipient;
@@ -20,6 +20,10 @@ class Email {
     }
 
     // Getters and setters
+    public String getSender() {
+        return sender;
+    }
+
     public String getRecipient() {
         return recipient;
     }
